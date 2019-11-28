@@ -5,41 +5,40 @@ namespace VideoStoreClean
 {
     public class StatementFormatter
     {
-
-        public string formatStatement(string customerName, List<Rental> rentals)
+	    public string FormatStatement(string customerName, List<Rental> rentals)
         {
-            return formatHeader(customerName) +
-                   formatBody(rentals) +
-                   formatFooter(rentals);
+            return FormatHeader(customerName) +
+                   FormatBody(rentals) +
+                   FormatFooter(rentals);
         }
 
-        private string formatBody(IEnumerable<Rental> rentals)
+        private string FormatBody(IEnumerable<Rental> rentals)
         {
-            return rentals.Select(formatBodyLine).Aggregate((a,c) => $"{a}{c}");
+            return rentals.Select(FormatBodyLine).Aggregate((a,c) => $"{a}{c}");
         }
 
-        private string formatFooter(List<Rental> rentals)
+        private string FormatFooter(List<Rental> rentals)
         {
-            return "Amount owed is " + calculateTotalPrice(rentals) + "\n" +
-                   "You earned " + calculateTotalRenterPoints(rentals) + " frequent renter points";
+            return "Amount owed is " + CalculateTotalPrice(rentals) + "\n" +
+                   "You earned " + CalculateTotalRenterPoints(rentals) + " frequent renter points";
         }
 
-        private double calculateTotalPrice(IEnumerable<Rental> rentals)
+        private double CalculateTotalPrice(IEnumerable<Rental> rentals)
         {
             return rentals.Sum(r => r.CalculatePrice());
         }
 
-        private int calculateTotalRenterPoints(IEnumerable<Rental> rentals)
+        private int CalculateTotalRenterPoints(IEnumerable<Rental> rentals)
         {
             return rentals.Sum(r => r.CalculateRenterPoints());
         }
 
-        private string formatBodyLine(Rental rental)
+        private string FormatBodyLine(Rental rental)
         {
             return "\t" + rental.GetMovie().GetTitle() + "\t" + rental.CalculatePrice() + "\n";
         }
 
-        private string formatHeader(string customerName)
+        private string FormatHeader(string customerName)
         {
             return "Rental Record for " + customerName + "\n";
         }

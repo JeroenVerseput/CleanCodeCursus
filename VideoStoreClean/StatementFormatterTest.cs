@@ -33,7 +33,7 @@ namespace VideoStoreClean
                               + "You earned 4 frequent renter points";
 
             Assert.AreEqual(expected, new StatementFormatter()
-                .formatStatement("John Doe", rentals));
+                .FormatStatement("John Doe", rentals));
         }
 
     }
