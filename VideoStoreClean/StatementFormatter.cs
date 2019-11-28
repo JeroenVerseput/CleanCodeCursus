@@ -17,7 +17,7 @@ namespace VideoStoreClean
 
         private string formatBody(IEnumerable<Rental> rentals)
         {
-            return string.Join("" ,rentals.Select(formatBodyLine));
+            return rentals.Select(formatBodyLine).Aggregate((a,c) => $"{a}{c}");
         }
 
         private string formatFooter(List<Rental> rentals)
