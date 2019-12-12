@@ -6,31 +6,14 @@ namespace VideoStore
 {
     public class Movie
     {
-        public const int CHILDRENS = 2;
-        public const int REGULAR = 0;
-        public const int NEW_RELEASE = 1;
-        private string _title;
-        private int _priceCode;
+        public string Title { get; }
+        public MovieType MovieType { get; set; }
 
-        public Movie(String title, int priceCode)
-        {
-            _title = title;
-            _priceCode = priceCode;
-        }
 
-        public int getPriceCode()
+        public Movie(string title, MovieType movieType)
         {
-            return _priceCode;
-        }
-
-        public void setPriceCode(int arg)
-        {
-            _priceCode = arg;
-        }
-
-        public String getTitle()
-        {
-            return _title;
+            Title = title;
+            MovieType = movieType;
         }
     }
 }
