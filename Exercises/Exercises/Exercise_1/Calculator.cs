@@ -1,79 +1,68 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace Exercises.Exercise_1
+namespace Exercises.Exercises.Exercise_1
 {
-	public class Calculator
-	{
-        public decimal CalculateSelfEmploymentIncomeForMortgage(List<SelfEmployment> selfEmployments)
+    public class Calculator
+    {
+        public decimal CalculateSelfEmploymentIncomeForMortgage(IEnumerable<SelfEmployment> selfEmployments)
         {
-            var totalIncomeFromSelfEmployments = 0m;
-
-            foreach (var selfEmployment in selfEmployments)
+            return selfEmployments.Sum(selfEmployment =>
             {
-                // Wanneer alle drie de jaren worden ingevuld kunnen we voor 100% berekenen
                 if (selfEmployment.NetProfitThirdLastYear > 0)
                 {
-                    var averageIncome = (selfEmployment.NetProfitThirdLastYear +
-                                         selfEmployment.NetProfitSecondLastYear +
-                                         selfEmployment.NetProfitLastYear) / 3m;
-
-                    var incomeUsedForCalculation = selfEmployment.NetProfitLastYear < averageIncome
-                        ? selfEmployment.NetProfitLastYear
-                        : averageIncome;
-
-                    totalIncomeFromSelfEmployments += incomeUsedForCalculation * 1.00m;
+                    return CalculateIncomeForTheGiveLastThreeYears(selfEmployment) * 1.00m;
                 }
-                // Wanneer we alleen voor de afgelopen twee jaar ontvangen mogen we deze alleen voor maar 90% berekenen
-                else if (selfEmployment.NetProfitSecondLastYear > 0)
+
+                if (selfEmployment.NetProfitSecondLastYear > 0)
                 {
-                    var averageIncome = (selfEmployment.NetProfitSecondLastYear + selfEmployment.NetProfitLastYear) / 2m;
-
-                    var incomeUsedForCalculation = selfEmployment.ExpectedNetProfitCurrentYear < averageIncome
-                        ? selfEmployment.ExpectedNetProfitCurrentYear
-                        : averageIncome;
-
-                    totalIncomeFromSelfEmployments += incomeUsedForCalculation * 0.90m;
+                    return CalculateIncomeForTheGiveLastTwoYears(selfEmployment) * 0.90m;
                 }
-                // Wanneer we allen voor afgelopen jaar hebben kunnen we maar voor 75% berekenen
-                else
-                {
-                    var averageIncome = selfEmployment.NetProfitLastYear;
 
-                    var incomeUsedForCalculation = selfEmployment.ExpectedNetProfitCurrentYear < averageIncome
-                        ? selfEmployment.ExpectedNetProfitCurrentYear
-                        : averageIncome;
-
-                    totalIncomeFromSelfEmployments += incomeUsedForCalculation * 0.75m;
-                }
-            }
-
-            return totalIncomeFromSelfEmployments;
+                return CalculateIncomeForTheGiveLastYear(selfEmployment) * 0.75m;
+            });
         }
-    }
 
-    /// <summary>
-	/// Inkomen als ondernemer.
-	/// </summary>
-	public class SelfEmployment
-    {
-        /// <summary>
-		/// Verwachte netto winst van huidig jaar.
-		/// </summary>
-        public decimal ExpectedNetProfitCurrentYear { get; set; }
+        private static decimal CalculateIncomeForTheGiveLastYear(SelfEmployment selfEmployment)
+        {
+            return GetExpectedNetProfitCurrentYearIfGraterThanAverageIncome(selfEmployment.ExpectedNetProfitCurrentYear, selfEmployment.NetProfitLastYear);
+        }
 
-        /// <summary>
-        /// Netto winst van afgelopen jaar.
-        /// </summary>
-        public decimal NetProfitLastYear { get; set; }
+        private static decimal CalculateIncomeForTheGiveLastTwoYears(SelfEmployment selfEmployment)
+        {
+            var averageIncome = (selfEmployment.NetProfitSecondLastYear + selfEmployment.NetProfitLastYear) / 2m;
 
-        /// <summary>
-        /// Netto winst van 2 jaar terug.
-        /// </summary>
-        public decimal NetProfitSecondLastYear { get; set; }
+            return GetExpectedNetProfitCurrentYearIfGraterThanAverageIncome(selfEmployment.ExpectedNetProfitCurrentYear,
+                averageIncome);
+        }
 
-        /// <summary>
-        /// Netto winst van 3 jaar terug.
-        /// </summary>
-        public decimal NetProfitThirdLastYear { get; set; }
+        private static decimal GetExpectedNetProfitCurrentYearIfGraterThanAverageIncome(decimal expectedNetProfitCurrentYear, decimal averageIncome)
+        {
+            return expectedNetProfitCurrentYear < averageIncome
+                ? expectedNetProfitCurrentYear
+                : averageIncome;
+        }
+
+        private static decimal CalculateIncomeForTheGiveLastThreeYears(SelfEmployment selfEmployment)
+        {
+            var averageIncome = (selfEmployment.NetProfitThirdLastYear +
+                                 selfEmployment.NetProfitSecondLastYear +
+                                 selfEmployment.NetProfitLastYear) / 3m;
+
+            return selfEmployment.NetProfitLastYear < averageIncome
+                ? selfEmployment.NetProfitLastYear
+                : averageIncome;
+        }
+
+        public class SelfEmployment
+        {
+            public decimal ExpectedNetProfitCurrentYear { get; set; }
+
+            public decimal NetProfitLastYear { get; set; }
+
+            public decimal NetProfitSecondLastYear { get; set; }
+
+            public decimal NetProfitThirdLastYear { get; set; }
+        }
     }
 }
