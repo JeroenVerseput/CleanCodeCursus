@@ -1,36 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace VideoStore
 {
     public class Movie
     {
-        public const int CHILDRENS = 2;
-        public const int REGULAR = 0;
-        public const int NEW_RELEASE = 1;
-        private string _title;
-        private int _priceCode;
+        private readonly string _title;
+        private MovieType _movieType;
 
-        public Movie(String title, int priceCode)
+        public Movie(String title, MovieType movieType)
         {
             _title = title;
-            _priceCode = priceCode;
+            _movieType = movieType;
         }
 
-        public int getPriceCode()
+        public MovieType GetMovieType()
         {
-            return _priceCode;
+            return _movieType;
         }
 
-        public void setPriceCode(int arg)
+        public void SetMovieType(MovieType movieType)
         {
-            _priceCode = arg;
+            _movieType = movieType;
         }
 
-        public String getTitle()
+        public string GetTitle()
         {
             return _title;
         }
+    }
+
+    public enum MovieType
+    {
+        Regular = 0,
+        NewRelease = 1,
+        Children = 2
     }
 }
