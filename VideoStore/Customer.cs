@@ -1,74 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace VideoStore
 {
-    class Customer
+    public class Customer
     {
         private string name;
         private Dictionary<Movie, int> rentals = new Dictionary<Movie, int>(); 
 
-        public Customer(String name)
+        public Customer(string name)
         {
             this.name = name;
         }
 
-        public void addRental(Movie m, int d)
+        public void AddRental(Movie movie, int daysOfRental)
         {
-            if (d <= 0) throw new ArgumentOutOfRangeException("Negative days rented");
-            rentals.Add(m, d);
+            if (daysOfRental <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Negative days rented");
+            }
+
+            rentals.Add(movie, daysOfRental);
         }
 
-        public String getName()
-        {
-            return name;
-        }
+        public string GetName() => name;
 
-        public String statement()
+        public string GetRentalStatement()
         {
-            double totalAmount = 0;
+            double totalRentalCosts = 0;
             int frequentRenterPoints = 0;
-            String result = "Rental Record for " + getName() + "\n";
+            String result = "Rental Record for " + GetName() + "\n";
+
             foreach (var rental in rentals)
             {
-                double thisAmount = 0;
-                Movie each = (Movie)rental.Key;
-                // determine amounts for each line
-                int dr = rental.Value;
-                switch (each.getPriceCode())
-                {
-                    case Movie.REGULAR:
-                        thisAmount += 2;
-                        if (dr > 2)
-                            thisAmount += (dr - 2) * 1.5;
-                        break;
-                    case Movie.NEW_RELEASE:
-                        thisAmount += dr * 3;
-                        break;
-                    case Movie.CHILDRENS:
-                        thisAmount += 1.5;
-                        if (dr > 3)
-                            thisAmount += (dr - 3) * 1.5;
-                        break;
-                }
-                // add frequent renter points
-                frequentRenterPoints++;
-                // add bonus for a two day new release rental
-                if (each.getPriceCode() != null &&
-                    (each.getPriceCode() == Movie.NEW_RELEASE)
-                    && dr > 1)
-                    frequentRenterPoints++;
-                // show figures line for this rental
-                result += "\t" + each.getTitle() + "\t"
-                          + thisAmount + "\n";
-                totalAmount += thisAmount;
+                result = FrequentRenterPoints(rental, ref frequentRenterPoints, result, ref totalRentalCosts);
             }
+            
             // add footer lines
-            result += "Amount owed is " + totalAmount + "\n";
+            result += "Amount owed is " + totalRentalCosts + "\n";
             result += "You earned " + frequentRenterPoints
                                     + " frequent renter points";
             return result;
+        }
+
+        private static string FrequentRenterPoints(
+            KeyValuePair<Movie, int> rental,
+            ref int frequentRenterPoints,
+            string result,
+            ref double totalRentalCosts)
+        {
+            Movie movie = rental.Key;
+            int daysOfRental = rental.Value;
+
+            double rentalCosts = CalculateRentalCosts(movie, daysOfRental);
+
+            frequentRenterPoints += CalculateFrequentRenterPoints(movie, daysOfRental);
+
+            // show figures line for this rental
+            result += $"\t{movie.GetTitle()}\t{rentalCosts}\n";
+            totalRentalCosts += rentalCosts;
+            return result;
+        }
+
+        private static double CalculateRentalCosts(Movie movie, int daysOfRental)
+        {
+            double rentalCosts = 0;
+
+            switch (movie.GetMovieType())
+            {
+                case MovieType.Regular:
+                    rentalCosts += 2;
+                    if (daysOfRental > 2)
+                        rentalCosts += (daysOfRental - 2) * 1.5;
+                    break;
+                case MovieType.NewRelease:
+                    rentalCosts += daysOfRental * 3;
+                    break;
+                case MovieType.Children:
+                    rentalCosts += 1.5;
+                    if (daysOfRental > 3)
+                        rentalCosts += (daysOfRental - 3) * 1.5;
+                    break;
+            }
+
+            return rentalCosts;
+        }
+
+        private static int CalculateFrequentRenterPoints(Movie movie, int daysOfRental)
+        {
+            int frequentRenterPoints = 1;
+
+            // add bonus for a two day new release rental
+            if (movie.GetMovieType() == MovieType.NewRelease && daysOfRental > 1)
+            {
+                frequentRenterPoints++;
+            }
+
+            return frequentRenterPoints;
         }
     }
 }
