@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Exercises.Exercise_1
+namespace Exercises.Exercises.Exercise_1
 {
 	public class Calculator
 	{
