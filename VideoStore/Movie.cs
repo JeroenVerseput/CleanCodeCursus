@@ -1,36 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VideoStore
+﻿namespace VideoStore
 {
-    public class Movie
+    internal class Movie
     {
-        public const int CHILDRENS = 2;
-        public const int REGULAR = 0;
-        public const int NEW_RELEASE = 1;
-        private string _title;
-        private int _priceCode;
+        private MovieType type;
+        private string title;
 
-        public Movie(String title, int priceCode)
+        internal Movie(string title, MovieType type)
         {
-            _title = title;
-            _priceCode = priceCode;
+            this.title = title;
+            this.type = type;
         }
 
-        public int getPriceCode()
+        internal string GetTitle()
         {
-            return _priceCode;
+            return title;
         }
 
-        public void setPriceCode(int arg)
+        internal MovieType GetMovieType()
         {
-            _priceCode = arg;
-        }
-
-        public String getTitle()
-        {
-            return _title;
+            return type;
         }
     }
 }
